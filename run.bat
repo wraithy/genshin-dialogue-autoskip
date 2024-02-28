@@ -2,7 +2,6 @@
 @echo off & setlocal
 title Overlay
 mode 40,9
-color 09
 
 rem // Relaunch self in PowerShell to run this window Always On Top
 powershell -noprofile "iex (${%~f0} | out-string)"
