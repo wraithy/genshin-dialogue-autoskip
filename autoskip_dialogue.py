@@ -13,7 +13,7 @@ from dotenv import find_dotenv, load_dotenv, set_key
 # Initial setup
 os.system('cls')
 load_dotenv()
-print('Welcome to Genshin Impact Dialogue Skipper\n')
+listening = True
 
 # Check if either screen dimension is missing from .env
 if os.environ['WIDTH'] == '' or os.environ['HEIGHT'] == '':
@@ -90,25 +90,49 @@ def random_cursor_position() -> Tuple[int, int]:
 
     return x, y
 
+def console_msg() -> None:
+    """
+    Clear the screen and print the welcome message along with status information.
+    :param status: The current status information to be included in the message.
+    :return: None
+    """
+    os.system('cls')
+    print('\033[90m┌─────────────────────────────────────┐\033[0m')
+    print('\033[90m│ \033[0mWelcome to Genshin Dialogue Skipper \033[90m│\033[0m')
+    print('\033[90m├─────────────────────────────────────┤\033[0m')
+    print(f'\033[90m│ {"[\033[1;32m>>\033[90m]" if main.status == "run" else "\033[90m[  ]"}\033[0m \033[37m"\033[1mY\033[0m" to start                   \033[90m│\033[0m')
+    print(f'\033[90m│ {"[\033[1;32m>>\033[90m]" if main.status == "pause" else "\033[90m[  ]"}\033[0m \033[37m"\033[1mH\033[0m" to pause                   \033[90m│\033[0m')
+    print('\033[90m├─────────────────────────────────────┤\033[0m')
+    print(f'\033[90m│ [{"\033[1;32m>>\033[90m" if listening else "  "}]\033[0m "\033[1m\\\033[0m" to toggle key detection    \033[90m│\033[0m')
+    print('\033[90m└─────────────────────────────────────┘\033[0m')
 
 def on_press(key: (Union[Key, KeyCode, None])) -> None:
+    global listening
     """
-    Start, stop, or exit the program based on the key pressed.
+    Start or stop the program based on the key pressed.
     :param key: The key pressed.
     :return: None
     """
 
-    key_pressed = str(key)
+    if isinstance(key, KeyCode):
+        key_pressed = key.char.lower()
+    else:
+        key_pressed = key
 
-    if key_pressed == 'Key.f8':
+    if key_pressed == '\\':
+        if listening:
+            listening = False
+            console_msg()
+        else:
+            listening = True
+            console_msg()
+            
+    if key_pressed == 'y' and listening:
         main.status = 'run'
-        print('RUNNING')
-    elif key_pressed == 'Key.f9':
+        console_msg()
+    elif key_pressed == 'h' and listening:
         main.status = 'pause'
-        print('PAUSED')
-    elif key_pressed == 'Key.f12':
-        main.status = 'exit'
-        exit()
+        console_msg()
 
 
 def main() -> None:
@@ -143,19 +167,11 @@ def main() -> None:
     last_reposition = 0.0
     time_between_repositions = random_interval() * 40
 
-    print('-------------\n'
-          'F8 to start\n'
-          'F9 to stop\n'
-          'F12 to quit\n'
-          '-------------')
-
+    console_msg()
+ 
     while True:
         while main.status == 'pause':
             sleep(0.5)
-
-        if main.status == 'exit':
-            print('Main program closing')
-            break
 
         if is_genshinimpact_active() and (is_dialogue_playing() or is_dialogue_option_available()):
             if perf_counter() - last_reposition > time_between_repositions:
