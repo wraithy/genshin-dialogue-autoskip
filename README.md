@@ -5,6 +5,9 @@ This script automatically skips dialogue in Genshin Impact, always chooses the b
 
 *Using third-party software is against the game's ToS. Use at your own discretion.*
 
+## Preview
+![image](https://github.com/wraithy/genshin-dialogue-autoskip/assets/83000298/437da5f8-9704-4960-b587-5748d18eda89)
+
 ## Requirements
 - The game running on the primary display
 - The script run as Admin to allow key and mouse emulation
